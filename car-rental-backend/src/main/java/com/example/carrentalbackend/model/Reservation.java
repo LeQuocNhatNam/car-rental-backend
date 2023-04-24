@@ -17,6 +17,29 @@ public class Reservation {
 
     private Double totalPrice;
 
+    private boolean isDeleted;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    private Employee employee;
+
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public Set<RentalDetail> getRentalDetailSet() {
+        return rentalDetailSet;
+    }
+
+    public void setRentalDetailSet(Set<RentalDetail> rentalDetailSet) {
+        this.rentalDetailSet = rentalDetailSet;
+    }
+
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;

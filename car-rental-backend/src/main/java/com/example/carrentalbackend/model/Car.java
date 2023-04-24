@@ -19,9 +19,24 @@ public class Car {
 
     private String numberPlate;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    private Employee employee;
+
+    private boolean isDeleted;
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    public Set<RentalDetail> getRentalDetailSet() {
+        return rentalDetailSet;
+    }
+
+    public void setRentalDetailSet(Set<RentalDetail> rentalDetailSet) {
+        this.rentalDetailSet = rentalDetailSet;
+    }
 
     @OneToMany(mappedBy = "car")
     @JsonIgnore
@@ -30,13 +45,12 @@ public class Car {
     public Car() {
     }
 
-    public Car(Long id, Double price, String model, String brand, String numberPlate, Employee employee) {
+    public Car(Long id, Double price, String model, String brand, String numberPlate) {
         this.id = id;
         this.price = price;
         this.model = model;
         this.brand = brand;
         this.numberPlate = numberPlate;
-        this.employee = employee;
     }
 
     public Long getId() {
@@ -79,11 +93,5 @@ public class Car {
         this.numberPlate = numberPlate;
     }
 
-    public Employee getEmployee() {
-        return employee;
-    }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
 }

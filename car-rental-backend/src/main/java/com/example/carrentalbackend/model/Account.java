@@ -22,6 +22,18 @@ public class Account {
     @JsonIgnore
     private Set<AccountRole> accountRoles;
 
+    @OneToOne(mappedBy = "account")
+    @JsonIgnore
+    private Customer customer;
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     public Account() {
     }
 

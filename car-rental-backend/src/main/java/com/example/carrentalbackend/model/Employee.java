@@ -21,14 +21,25 @@ public class Employee {
 
     private String salary;
 
+    private boolean isDeleted;
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
+    @OneToMany(mappedBy = "employee")
+    @JsonIgnore
+    private Set<Reservation> reservations;
+
 
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
-    @OneToMany(mappedBy = "employee")
-    @JsonIgnore
-    private Set<Car> cars;
 
     public Employee() {
     }
@@ -41,7 +52,15 @@ public class Employee {
         this.phone_number = phone_number;
         this.salary = salary;
         this.account = account;
-        this.cars = cars;
+    }
+
+
+    public Set<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(Set<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     public Long getId() {
@@ -99,12 +118,5 @@ public class Employee {
     public void setAccount(Account account) {
         this.account = account;
     }
-
-    public Set<Car> getCars() {
-        return cars;
-    }
-
-    public void setCars(Set<Car> cars) {
-        this.cars = cars;
-    }
 }
+
