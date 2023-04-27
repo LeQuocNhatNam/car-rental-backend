@@ -42,8 +42,15 @@ public class Car {
     @JsonIgnore
     private Set<RentalDetail> rentalDetailSet;
 
+    @OneToMany(mappedBy = "car")
+    @JsonIgnore
+    private Set<Image> imageSet;
+
+
+
     public Car() {
     }
+
 
     public Car(Long id, Double price, String model, String brand, String numberPlate) {
         this.id = id;
@@ -51,6 +58,14 @@ public class Car {
         this.model = model;
         this.brand = brand;
         this.numberPlate = numberPlate;
+    }
+
+    public Set<Image> getImageSet() {
+        return imageSet;
+    }
+
+    public void setImageSet(Set<Image> imageSet) {
+        this.imageSet = imageSet;
     }
 
     public Long getId() {
