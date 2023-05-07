@@ -15,6 +15,9 @@ public class CarDTO {
 
     private String numberPlate;
 
+    private String description;
+
+
 
     private boolean isDeleted;
 
@@ -23,6 +26,14 @@ public class CarDTO {
     public CarDTO() {
     }
 
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
     public Long getId() {
         return id;
     }

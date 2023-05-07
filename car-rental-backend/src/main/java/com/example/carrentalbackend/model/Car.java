@@ -3,6 +3,7 @@ package com.example.carrentalbackend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,6 +20,15 @@ public class Car {
 
     private String numberPlate;
 
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     private boolean isDeleted;
 
@@ -44,7 +54,7 @@ public class Car {
 
     @OneToMany(mappedBy = "car")
     @JsonIgnore
-    private Set<Image> imageSet;
+    private List<Image> imageList;
 
 
 
@@ -60,12 +70,12 @@ public class Car {
         this.numberPlate = numberPlate;
     }
 
-    public Set<Image> getImageSet() {
-        return imageSet;
+    public List<Image> getImageList() {
+        return imageList;
     }
 
-    public void setImageSet(Set<Image> imageSet) {
-        this.imageSet = imageSet;
+    public void setImageList(List<Image> imageList) {
+        this.imageList = imageList;
     }
 
     public Long getId() {

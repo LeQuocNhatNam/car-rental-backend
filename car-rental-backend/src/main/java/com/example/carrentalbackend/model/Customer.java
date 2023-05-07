@@ -23,6 +23,10 @@ public class Customer {
 
     private boolean isDeleted;
 
+    @OneToOne(mappedBy = "customer")
+    @JsonIgnore
+    private Reservation reservation;
+
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
@@ -43,17 +47,13 @@ public class Customer {
         isDeleted = deleted;
     }
 
-    public Set<Reservation> getReservations() {
-        return reservations;
+    public Reservation getReservation() {
+        return reservation;
     }
 
-    public void setReservations(Set<Reservation> reservations) {
-        this.reservations = reservations;
+    public void setReservation(Reservation reservation) {
+        this.reservation = reservation;
     }
-
-    @OneToMany(mappedBy = "customer")
-    @JsonIgnore
-    private Set<Reservation> reservations;
 
     public Customer() {
     }

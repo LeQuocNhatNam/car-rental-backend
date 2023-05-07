@@ -1,6 +1,14 @@
 package com.example.carrentalbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.bytebuddy.asm.Advice;
+
 import javax.persistence.*;
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.Date;
 
 @Entity
 public class RentalDetail {
@@ -12,9 +20,14 @@ public class RentalDetail {
     @JoinColumn(name = "car_id", referencedColumnName = "id")
     private Car car;
 
+    private String pickupDate;
+
+    private String returnDate;
+
+
     @ManyToOne
     @JoinColumn(name = "reservation_id", referencedColumnName = "id")
-    private Reservation reservation ;
+    private Reservation reservation;
 
     public RentalDetail() {
     }
@@ -23,6 +36,23 @@ public class RentalDetail {
         this.id = id;
         this.car = car;
         this.reservation = reservation;
+    }
+
+
+    public String getPickupDate() {
+        return pickupDate;
+    }
+
+    public void setPickupDate(String pickupDate) {
+        this.pickupDate = pickupDate;
+    }
+
+    public String getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(String returnDate) {
+        this.returnDate = returnDate;
     }
 
     public Long getId() {
@@ -48,4 +78,6 @@ public class RentalDetail {
     public void setReservation(Reservation reservation) {
         this.reservation = reservation;
     }
+
+
 }

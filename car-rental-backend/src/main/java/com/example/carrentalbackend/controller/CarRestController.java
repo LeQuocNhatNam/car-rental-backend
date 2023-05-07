@@ -2,7 +2,6 @@ package com.example.carrentalbackend.controller;
 
 import com.example.carrentalbackend.dto.CarDTO;
 import com.example.carrentalbackend.model.Car;
-import com.example.carrentalbackend.model.Image;
 import com.example.carrentalbackend.service.ICarService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +27,36 @@ public class CarRestController {
     public ResponseEntity<Object> findAllCar(@RequestParam(required = false, defaultValue = "") String model,
                                              @RequestParam(required = false, defaultValue = "0") int page) {
 
-        Pageable pageable = PageRequest.of(page, 3);
+        Pageable pageable = PageRequest.of(page, 6);
         Page<CarDTO> carDTOPage;
         List<CarDTO> carDTOList = new ArrayList<>();
         Page<Car> carPage = iCarService.findAllCar(model, pageable);
         for (Car car : carPage.getContent()) {
             CarDTO carDTO = new CarDTO();
             BeanUtils.copyProperties(car, carDTO);
-            List<Image> imageList = new ArrayList<>(car.getImageSet());
-            carDTO.setImageList(imageList);
+            carDTO.setImageList(car.getImageList());
+            carDTOList.add(carDTO);
+        }
+        carDTOPage = new PageImpl<>(carDTOList, carPage.getPageable(), carPage.getTotalElements());
+        if (carPage.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(carDTOPage, HttpStatus.OK);
+    }
+
+    @GetMapping("/search-car-by-date")
+    public ResponseEntity<Object> searchCarsByDate(@RequestParam(required = false, defaultValue = "") String model,
+                                                   @RequestParam(required = false, defaultValue = "0") int page,
+                                                   @RequestParam String pickupDate,
+                                                   @RequestParam String returnDate) {
+        Pageable pageable = PageRequest.of(page, 6);
+        Page<CarDTO> carDTOPage;
+        List<CarDTO> carDTOList = new ArrayList<>();
+        Page<Car> carPage = iCarService.searchAllCarByDate(model,pickupDate,returnDate,pageable);
+        for (Car car : carPage.getContent()) {
+            CarDTO carDTO = new CarDTO();
+            BeanUtils.copyProperties(car, carDTO);
+            carDTO.setImageList(car.getImageList());
             carDTOList.add(carDTO);
         }
         carDTOPage = new PageImpl<>(carDTOList, carPage.getPageable(), carPage.getTotalElements());
@@ -56,7 +76,7 @@ public class CarRestController {
 
         BeanUtils.copyProperties(car, carDTO);
 
-        carDTO.setImageList(new ArrayList<>(car.getImageSet()));
+        carDTO.setImageList(new ArrayList<>(car.getImageList()));
 
         return new ResponseEntity<>(carDTO, HttpStatus.OK);
     }

@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+
 @Service
 public class CarService implements ICarService {
     @Autowired
@@ -21,5 +23,16 @@ public class CarService implements ICarService {
     @Override
     public Car findByCarId(Long id) {
         return iCarRepository.findCarById(id);
+    }
+
+    @Override
+    public void deleteCar(Long id) {
+        iCarRepository.deleteCar(id);
+    }
+
+    @Override
+    public Page<Car> searchAllCarByDate(String model, String pickupDate, String returnDate, Pageable pageable) {
+        return iCarRepository.searchCarByDate("%" + model + "%", Date.valueOf(pickupDate),
+                Date.valueOf(returnDate), pageable);
     }
 }
