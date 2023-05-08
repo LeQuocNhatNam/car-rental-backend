@@ -15,9 +15,7 @@ public class Payment {
 
     private boolean isPaid;
 
-    @OneToMany(mappedBy = "payment")
-    @JsonIgnore
-    private List<Reservation> reservationList;
+
 
     public Payment() {
     }
@@ -46,11 +44,5 @@ public class Payment {
         isPaid = paid;
     }
 
-    public List<Reservation> getReservationList() {
-        return reservationList;
-    }
 
-    public void setReservationList(List<Reservation> reservationList) {
-        this.reservationList = reservationList;
-    }
 }

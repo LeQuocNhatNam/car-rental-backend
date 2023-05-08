@@ -31,5 +31,7 @@ public interface ICartService {
 
     RentalDetail findCartItemById(Long id);
 
+    void updateRentalDetail(RentalDetail rentalDetail);
+
 
 }

@@ -16,4 +16,9 @@ public class ReservationService implements IReservationService {
     public Reservation saveReservation(Reservation reservation) {
         return this.iReservationRepository.save(reservation);
     }
+
+    @Override
+    public void setPaidReservation(Reservation reservation) {
+        iReservationRepository.save(reservation);
+    }
 }

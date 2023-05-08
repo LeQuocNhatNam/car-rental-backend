@@ -68,5 +68,10 @@ public class CartService implements ICartService {
         return iCartRepository.findById(id).get();
     }
 
+    @Override
+    public void updateRentalDetail(RentalDetail rentalDetail) {
+        iCartRepository.save(rentalDetail);
+    }
+
 
 }

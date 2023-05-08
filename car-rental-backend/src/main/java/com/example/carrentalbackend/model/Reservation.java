@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class Reservation {
@@ -14,9 +13,9 @@ public class Reservation {
 
     private Double totalPrice;
 
-    private boolean isDeleted;
+    private boolean isPaid;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
 
@@ -24,9 +23,7 @@ public class Reservation {
     @JoinColumn(name = "employee_id", referencedColumnName = "id")
     private Employee employee;
 
-    @ManyToOne
-    @JoinColumn(name = "payment_id", referencedColumnName = "id")
-    private Payment payment;
+
 
     public Employee getEmployee() {
         return employee;
@@ -36,20 +33,14 @@ public class Reservation {
         this.employee = employee;
     }
 
-    public Payment getPayment() {
-        return payment;
+
+
+    public boolean isPaid() {
+        return isPaid;
     }
 
-    public void setPayment(Payment payment) {
-        this.payment = payment;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setPaid(boolean paid) {
+        isPaid = paid;
     }
 
 

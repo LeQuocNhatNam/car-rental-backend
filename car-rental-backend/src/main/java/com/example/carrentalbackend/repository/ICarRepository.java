@@ -25,10 +25,10 @@ public interface ICarRepository extends JpaRepository<Car, Long> {
 
     @Query(value = "select * from car where model like :model and is_deleted = false and car.id not in (\n" +
             "select car.id from car join rental_detail on car.id = rental_detail.car_id \n" +
-            "where (:pickupDate between pickup_date and return_date) \n" +
+            "where rental_detail.is_rented = true and ((:pickupDate between pickup_date and return_date) \n" +
             "or (:returnDate between pickup_date and return_date) \n" +
             "or (pickup_date between :pickupDate and :returnDate)\n" +
-            "or (return_date between :pickupDate and :returnDate))",nativeQuery = true)
+            "or (return_date between :pickupDate and :returnDate)))",nativeQuery = true)
     Page<Car> searchCarByDate(@Param("model") String model,
                               @Param("pickupDate") Date pickupDate,
                               @Param("returnDate") Date returnDate,

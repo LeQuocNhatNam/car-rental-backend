@@ -41,17 +41,22 @@ public interface ICartRepository extends JpaRepository<RentalDetail, Long> {
 
     List<RentalDetail> findRentalDetailByCar(Car car);
 
-    @Query(value = "select * from rental_detail where car_id = :carId \n" +
-            "and (:pickupDate between pickup_date and return_date) \n" +
+
+    @Query(value = "select * from rental_detail where car_id = :carId and rental_detail.is_rented = true \n" +
+            "and ((:pickupDate between pickup_date and return_date) \n" +
             "or (:returnDate between pickup_date and return_date) \n" +
             "or (pickup_date between :pickupDate and :returnDate)\n" +
-            "or (return_date between :pickupDate and :returnDate); ", nativeQuery = true)
-    List<RentalDetail> findCarSchedule (@Param("carId") Long carId,
+            "or (return_date between :pickupDate and :returnDate)); ", nativeQuery = true)
+    List<RentalDetail> findCarSchedule(@Param("carId") Long carId,
                                        @Param("pickupDate") Date pickupDate,
                                        @Param("returnDate") Date returnDate);
 
-
-
-
-
+    @Query(value = "UPDATE `car_rental`.`rental_detail` SET `is_rented` = 1 WHERE (`id` = :id)", nativeQuery = true)
+    void updateRentalDetail(@Param("id") Long id);
 }
+
+
+
+
+
+

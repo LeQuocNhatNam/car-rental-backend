@@ -3,6 +3,7 @@ package com.example.carrentalbackend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,9 +24,9 @@ public class Customer {
 
     private boolean isDeleted;
 
-    @OneToOne(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer")
     @JsonIgnore
-    private Reservation reservation;
+    private List<Reservation> reservationList;
 
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
@@ -47,12 +48,13 @@ public class Customer {
         isDeleted = deleted;
     }
 
-    public Reservation getReservation() {
-        return reservation;
+
+    public List<Reservation> getReservationList() {
+        return reservationList;
     }
 
-    public void setReservation(Reservation reservation) {
-        this.reservation = reservation;
+    public void setReservationList(List<Reservation> reservationList) {
+        this.reservationList = reservationList;
     }
 
     public Customer() {

@@ -24,6 +24,8 @@ public class RentalDetail {
 
     private String returnDate;
 
+    private boolean isRented;
+
 
     @ManyToOne
     @JoinColumn(name = "reservation_id", referencedColumnName = "id")
@@ -32,12 +34,14 @@ public class RentalDetail {
     public RentalDetail() {
     }
 
-    public RentalDetail(Long id, Car car, Reservation reservation) {
-        this.id = id;
-        this.car = car;
-        this.reservation = reservation;
+
+    public boolean isRented() {
+        return isRented;
     }
 
+    public void setRented(boolean rented) {
+        isRented = rented;
+    }
 
     public String getPickupDate() {
         return pickupDate;

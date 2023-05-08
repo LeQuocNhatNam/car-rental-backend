@@ -4,4 +4,6 @@ import com.example.carrentalbackend.model.Reservation;
 
 public interface IReservationService {
     Reservation saveReservation(Reservation reservation);
+
+    void setPaidReservation(Reservation reservation);
 }
