@@ -24,6 +24,15 @@ public class Reservation {
     private Employee employee;
 
 
+    private String bookingDate;
+
+    public String getBookingDate() {
+        return bookingDate;
+    }
+
+    public void setBookingDate(String bookingDate) {
+        this.bookingDate = bookingDate;
+    }
 
     public Employee getEmployee() {
         return employee;

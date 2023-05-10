@@ -1,6 +1,7 @@
 package com.example.carrentalbackend.controller;
 
 import com.example.carrentalbackend.dto.RentalDetailDTO;
+import com.example.carrentalbackend.dto.ReservationDTO;
 import com.example.carrentalbackend.model.*;
 import com.example.carrentalbackend.security_authentication.jwt.JwtUtility;
 import com.example.carrentalbackend.service.IAccountService;
@@ -12,9 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.ReactiveTransaction;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,8 +29,11 @@ import static com.example.carrentalbackend.security_authentication.jwt.JwtFilter
 @CrossOrigin
 @RequestMapping("/api/user/cart")
 public class CartRestController {
+
+
     @Autowired
     private ICartService iCartService;
+
 
     @Autowired
     private IAccountService iAccountService;
@@ -55,15 +63,7 @@ public class CartRestController {
         if (rentalDetailList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        List<RentalDetailDTO> cart = new ArrayList<>();
-        for (RentalDetail rentalDetail : rentalDetailList) {
-            RentalDetailDTO rentalDetailDTO = new RentalDetailDTO();
-            BeanUtils.copyProperties(rentalDetail, rentalDetailDTO);
-            rentalDetailDTO.setCarId(rentalDetail.getCar().getId());
-            rentalDetailDTO.setReservationId(rentalDetail.getReservation().getId());
-            rentalDetailDTO.setImageList(rentalDetail.getCar().getImageList());
-            cart.add(rentalDetailDTO);
-        }
+        List<RentalDetailDTO> cart = convertToRentalDetailDTO(rentalDetailList);
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
@@ -80,9 +80,11 @@ public class CartRestController {
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(rentalDetailDTOList);
         }
+
         String jwt = parseJwt(request);
         String username = jwtUtility.getUserNameFromJwtToken(jwt);
         Account account = iAccountService.findAccountByUsername(username);
+
         List<Reservation> reservationList = account.getCustomer().getReservationList().stream().filter(re -> !re.isPaid())
                 .collect(Collectors.toList());
         Reservation reservation = null;
@@ -112,25 +114,69 @@ public class CartRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/pay")
-    public ResponseEntity<Object> onPayment(HttpServletRequest request) {
+    @PutMapping("/pay/{totalPrice}")
+    public ResponseEntity<Object> onPayment(@PathVariable Double totalPrice,HttpServletRequest request) {
         String jwt = parseJwt(request);
         String username = jwtUtility.getUserNameFromJwtToken(jwt);
         Account account = iAccountService.findAccountByUsername(username);
         List<Reservation> reservationList = account.getCustomer().getReservationList().stream()
                 .filter(re -> (!re.isPaid())).collect(Collectors.toList());
         List<RentalDetail> rentalDetailList = reservationList.get(0).getRentalDetailList();
-        List<RentalDetail> rentalDetailListBusyCar = rentalDetailList.stream().filter(re -> re.isRented()).collect(Collectors.toList());
+        List<RentalDetail> rentalDetailListBusyCar = rentalDetailList.stream().filter(RentalDetail::isRented).collect(Collectors.toList());
         if (!rentalDetailListBusyCar.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(rentalDetailListBusyCar);
         }
-        for (RentalDetail rentalDetail : rentalDetailList) {
-                rentalDetail.setRented(true);
-                iCartService.updateRentalDetail(rentalDetail);
-        }
+
         reservationList.get(0).setPaid(true);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        reservationList.get(0).setBookingDate(dateTimeFormatter.format(LocalDate.now()));
+        reservationList.get(0).setTotalPrice(totalPrice);
+
         iReservationService.setPaidReservation(reservationList.get(0));
+        for (RentalDetail rentalDetail : rentalDetailList) {
+            rentalDetail.setRented(true);
+            iCartService.updateRentalDetail(rentalDetail);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<Object> showHistory(HttpServletRequest request) {
+
+        String jwt = parseJwt(request);
+        String username = jwtUtility.getUserNameFromJwtToken(jwt);
+        Account account = iAccountService.findAccountByUsername(username);
+        List<Reservation> reservationHistoryList = account.getCustomer().getReservationList()
+                .stream().filter(Reservation::isPaid).collect(Collectors.toList());
+        List<ReservationDTO> reservationDTOHistoryList = new ArrayList<>(reservationHistoryList.size());
+        for (Reservation reservation : reservationHistoryList) {
+            ReservationDTO reservationDTO = new ReservationDTO();
+            reservationDTO.setId(reservation.getId());
+            reservationDTO.setBookingDate(reservation.getBookingDate());
+            reservationDTO.setTotalPrice(reservation.getTotalPrice());
+            reservationDTO.setRentalDetailDTOList(convertToRentalDetailDTO(reservation.getRentalDetailList()));
+            reservationDTOHistoryList.add(reservationDTO);
+        }
+        if (reservationDTOHistoryList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(reservationDTOHistoryList, HttpStatus.OK);
+
+    }
+
+
+    public List<RentalDetailDTO> convertToRentalDetailDTO(List<RentalDetail> rentalDetailList) {
+        List<RentalDetailDTO> rentalDetailDTOList = new ArrayList<>();
+        for (RentalDetail rentalDetail : rentalDetailList) {
+            RentalDetailDTO rentalDetailDTO = new RentalDetailDTO();
+            BeanUtils.copyProperties(rentalDetail, rentalDetailDTO);
+            rentalDetailDTO.setCarId(rentalDetail.getCar().getId());
+            rentalDetailDTO.setReservationId(rentalDetail.getReservation().getId());
+            rentalDetailDTO.setImageList(rentalDetail.getCar().getImageList());
+            rentalDetailDTOList.add(rentalDetailDTO);
+        }
+        return rentalDetailDTOList;
     }
 }
 
